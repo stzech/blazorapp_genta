@@ -45,7 +45,7 @@
 
     private void DeleteEmployee(int i)
     {
-        Employees.RemoveAt(i);
+        Employees[i].IsActive = false;
     }
 }
 
@@ -64,7 +64,7 @@
     <tbody>
         @for (int i = 0; i < Employees.Count(); i++)
         {
-            @if (string.IsNullOrEmpty(Employees[i].Name)) continue;
+            @if (!Employees[i].IsActive) continue;
             <tr id="@employeeId+i">
                 <td>@i</td>
                 <td>@Employees[i].Name</td>
