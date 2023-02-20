@@ -17,7 +17,9 @@
     }
 
     private List<Employee> Employees = new List<Employee>();
+    private List<Employee> EmployeeFilter = new List<Employee>();
     private string employeeName = string.Empty;
+    private string employeeSearch = string.Empty;
     private string employeeId = "employee";
 
     protected override async Task OnInitializedAsync()
@@ -36,21 +38,39 @@
         {
             Employees.Add(new Employee(EmployeeName[i], EmployeeDateIn[i], true));
         }
+
+        EmployeeFilter = Employees;
     }
 
     private void AddEmployee()
     {
         Employees.Add(new Employee(employeeName, DateOnly.FromDateTime(DateTime.UtcNow).ToString(), true));
+        EmployeeFilter.Add(new Employee(employeeName, DateOnly.FromDateTime(DateTime.UtcNow).ToString(), true));
     }
 
     private void DeleteEmployee(int i)
     {
         Employees[i].IsActive = false;
+        EmployeeFilter[i].IsActive = false;
+    }
+
+    private void SearchEmployee()
+    {
+        EmployeeFilter = Employees;
+
+        if(!string.IsNullOrEmpty(employeeSearch))
+        {
+            EmployeeFilter = EmployeeFilter.Where(p => p.Name == employeeSearch).ToList();
+        }
     }
 }
 
-<h3>EmployeeList</h3>
-
+<h3>Employee List</h3>
+<div class="form-group col-md-5">
+    <label>Employee Name</label>
+    <input asp-for="employeeSearch" class="form-control" type="tel" id="employeeSearch" @bind="employeeSearch" />
+    <button class="btn btn-primary" @onclick="SearchEmployee">Search Employee</button>
+</div>
 <table class="table">
     <thead>
         <tr>
@@ -62,14 +82,14 @@
         </tr>
     </thead>
     <tbody>
-        @for (int i = 0; i < Employees.Count(); i++)
+        @for (int i = 0; i < EmployeeFilter.Count(); i++)
         {
-            @if (!Employees[i].IsActive) continue;
+            @if (!EmployeeFilter[i].IsActive) continue;
             <tr id="@employeeId+i">
                 <td>@i</td>
-                <td>@Employees[i].Name</td>
-                <td>@Employees[i].DateIn</td>
-                <td>@Employees[i].IsActive</td>
+                <td>@EmployeeFilter[i].Name</td>
+                <td>@EmployeeFilter[i].DateIn</td>
+                <td>@EmployeeFilter[i].IsActive</td>
                 <td><button value="@employeeId+i" @onclick="(e => DeleteEmployee(i))" class="btn btn-primary">Delete</button></td>
             </tr>
         }
