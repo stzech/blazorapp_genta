@@ -1,0 +1,84 @@
+﻿@page "/"
+@using BlazorApp1.Shared
+@inject HttpClient Http
+@code {
+    private class Employee
+    {
+        public Employee(string _name, string _datein, bool _isactive)
+        {
+            Name = _name;
+            DateIn = _datein;
+            IsActive = _isactive;
+        }
+
+        public string Name { get; set; } = string.Empty;
+        public string DateIn { get; set; }
+        public bool IsActive { get; set; }
+    }
+
+    private List<Employee> Employees = new List<Employee>();
+    private string employeeName = string.Empty;
+    private string employeeId = "employee";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var EmployeeName = new List<string>() { "Jonathan", "Joseph", "Jotaro", "Josuke", "Giorno", "Jolyne" };
+        var EmployeeDateIn = new List<string>(){
+                new DateOnly(1868, 4, 4).ToString(),
+                new DateOnly(1920, 9, 27).ToString(),
+                new DateOnly(1970, 10, 1).ToString(),
+                new DateOnly(1983, 12, 3).ToString(),
+                new DateOnly(1985, 4, 16).ToString(),
+                new DateOnly(1992, 6, 7).ToString(),
+        };
+
+        for (int i = 0; i < EmployeeName.Count(); i++)
+        {
+            Employees.Add(new Employee(EmployeeName[i], EmployeeDateIn[i], true));
+        }
+    }
+
+    private void AddEmployee()
+    {
+        Employees.Add(new Employee(employeeName, DateOnly.FromDateTime(DateTime.UtcNow).ToString(), true));
+    }
+
+    private void DeleteEmployee(int i)
+    {
+        Employees.RemoveAt(i);
+    }
+}
+
+<h3>EmployeeList</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>No.</th>
+            <th>Name</th>
+            <th>Create</th>
+            <th>IsActive</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @for (int i = 0; i < Employees.Count(); i++)
+        {
+            @if (string.IsNullOrEmpty(Employees[i].Name)) continue;
+            <tr id="@employeeId+i">
+                <td>@i</td>
+                <td>@Employees[i].Name</td>
+                <td>@Employees[i].DateIn</td>
+                <td>@Employees[i].IsActive</td>
+                <td><button value="@employeeId+i" @onclick="(e => DeleteEmployee(i))" class="btn btn-primary">Delete</button></td>
+            </tr>
+        }
+    </tbody>
+</table>
+<hr />
+<h3>Add New Employee</h3><br />
+<div class="form-group col-md-5">
+    <label >Employee Name</label>
+    <input asp-for="employeeName" class="form-control" type="tel" id="employeeName" @bind="employeeName" />
+    <button class="btn btn-primary" @onclick="AddEmployee">Add Employee</button>
+</div>
